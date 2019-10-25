@@ -9,6 +9,7 @@ const config = require( '../models/config-model' ).server;
 // var debug = require( 'debug' )( 'manifest-controller' );
 
 module.exports = app => {
+    app.use( `${app.get( 'base path' )}/fs/participant/x/manifest.appcache`, router );
     app.use( `${app.get( 'base path' )}/x/manifest.appcache*`, router );
     // legacy:
     app.use( `${app.get( 'base path' )}/_/manifest.appcache*`, router );
