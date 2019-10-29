@@ -27,9 +27,9 @@ if ( process.env.NODE_ENV === 'test' ) {
  * @param {string} lang
  * @return {Promise} Promise that resolves with manifest
  */
-function getManifest( html1, html2, lang ) {
-    const manifestKey = `ma:${lang}_manifest`;
-    const versionKey = `ma:${lang}_version`;
+function getManifest( html1, html2, lang, type = '' ) {
+    const manifestKey = `ma:${lang}_${type}_manifest`;
+    const versionKey = `ma:${lang}_${type}_version`;
 
     return new Promise( ( resolve, reject ) => {
         // each language gets its own manifest

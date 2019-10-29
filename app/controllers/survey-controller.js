@@ -56,7 +56,7 @@ router
     .get( '/single/fs/:mod/:enketo_id', fieldSubmission )
     .get( '/single/fs/c/:mod/:encrypted_enketo_id_fs_c', fieldSubmission )
     .get( '/single/fs/participant/:mod/:encrypted_enketo_id_fs_participant', fieldSubmission )
-    .get( '/fs/participant/x/:encrypted_enketo_id_fs_participant', fieldSubmissionOffline )
+    .get( '/fs/participant/x/', fieldSubmissionOffline )
     .get( '/preview/:enketo_id', preview )
     .get( '/preview/:mod/:enketo_id', preview )
     .get( '/preview', preview )
@@ -186,21 +186,18 @@ function fieldSubmission( req, res, next ) {
 function fieldSubmissionOffline( req, res, next ) {
     var options = {
         type: 'fieldsubmission',
-        //iframe: req.iframe,
-        print: req.query.print === 'true',
-        //jini: req.jini,
         participant: req.participant,
-        completeButton: req.completeButton,
         closeButtonIdSuffix: req.closeButtonIdSuffix,
-        //headless: !!req.headless
+        manifest: `${req.app.get( 'base path' )}/fs/participant/x/manifest.appcache`
     };
+
+    console.log( 'offline!' );
 
     if ( !req.app.get( 'offline enabled' ) ) {
         const error = new Error( 'Offline functionality has not been enabled for this application.' );
         error.status = 405;
         next( error );
     } else {
-        req.manifest = `${req.app.get( 'base path' )}/fs/participant/x/manifest.appcache`;
         _renderWebform( req, res, next, options );
     }
 }
