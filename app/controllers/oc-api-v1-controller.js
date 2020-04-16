@@ -88,6 +88,7 @@ router
     .post( '/survey/collect', getNewOrExistingSurvey )
     .post( '/survey/collect/c', getNewOrExistingSurvey )
     .post( '/survey/collect/participant', getNewOrExistingSurvey )
+    .post( '/instance/*', _setInterfaceQueryParam )
     .post( '/instance/view', cacheInstance )
     .post( '/instance/view/pdf', cacheInstance )
     .post( '/instance/edit', cacheInstance )
@@ -319,6 +320,21 @@ function _setDefaultsQueryParam( req, res, next ) {
     next();
 }
 
+function _setInterfaceQueryParam( req, res, next ) {
+    if ( req.body.interface ) {
+        if ( ![ 'default', 'queries', 'sdv' ].includes( req.body.interface ) ) {
+            const error = new Error( 'Invalid value for interface parameter.' );
+            error.status = 400;
+            next( error );
+        } else {
+            req.interfaceQueryParam = `interface=${req.body.interface}`;
+        }
+    } else {
+        req.interfaceQueryParam = '';
+    }
+    next();
+}
+
 function _setGoTo( req, res, next ) {
     const goTo = req.body.go_to;
     req.goTo = goTo ? `#${encodeURIComponent(goTo)}` : '';
@@ -422,20 +438,20 @@ function _generateWebformUrls( id, req ) {
         }
         case 'edit': {
             const editId = dnClosePart ? idFsC : id;
-            const queryString = _generateQueryString( [ req.ecid, req.pid, `instance_id=${req.body.instance_id}`, req.parentWindowOriginParam, req.returnQueryParam, req.goToErrorUrl, req.jini ] );
+            const queryString = _generateQueryString( [ req.ecid, req.pid, `instance_id=${req.body.instance_id}`, req.parentWindowOriginParam, req.returnQueryParam, req.goToErrorUrl, req.interfaceQueryParam, req.jini ] );
             url = `${BASEURL}edit/${FSPATH}${dnClosePart}${IFRAMEPATH}${editId}${queryString}${hash}`;
             break;
         }
         case 'edit-rfc': {
             const rfcId = dnClosePart ? idEditRfcC : idEditRfc;
-            const queryString = _generateQueryString( [ req.ecid, req.pid, `instance_id=${req.body.instance_id}`, req.parentWindowOriginParam, req.returnQueryParam, req.goToErrorUrl, req.jini ] );
+            const queryString = _generateQueryString( [ req.ecid, req.pid, `instance_id=${req.body.instance_id}`, req.parentWindowOriginParam, req.returnQueryParam, req.goToErrorUrl, req.interfaceQueryParam, req.jini ] );
             url = `${BASEURL}edit/${FSPATH}rfc/${dnClosePart}${IFRAMEPATH}${rfcId}${queryString}${hash}`;
             break;
         }
         case 'headless':
         case 'headless-rfc': {
             const rfcPath = req.webformType === 'headless-rfc' ? 'rfc/' : '';
-            const queryString = _generateQueryString( [ req.ecid, `instance_id=${req.body.instance_id}`, req.completeButtonParam ] );
+            const queryString = _generateQueryString( [ req.ecid, `instance_id=${req.body.instance_id}`, req.completeButtonParam, req.interfaceQueryParam, ] );
             url = `${BASEURL}edit/${FSPATH}${rfcPath}headless/${idEditHeadless}${queryString}`;
             break;
         }
@@ -451,13 +467,13 @@ function _generateWebformUrls( id, req ) {
             break;
         }
         case 'edit-participant': {
-            const queryString = _generateQueryString( [ req.ecid, req.pid, `instance_id=${req.body.instance_id}`, req.defaultsQueryParam, req.returnQueryParam, req.parentWindowOriginParam ] );
+            const queryString = _generateQueryString( [ req.ecid, req.pid, `instance_id=${req.body.instance_id}`, req.defaultsQueryParam, req.returnQueryParam, req.parentWindowOriginParam, req.interfaceQueryParam ] );
             url = `${BASEURL}edit/${FSPATH}participant/${IFRAMEPATH}${idFsParticipant}${queryString}${hash}`;
             break;
         }
         case 'view':
         case 'view-instance': {
-            const queryParts = [ req.ecid, req.pid, req.parentWindowOriginParam, req.returnQueryParam, req.loadWarning, req.goToErrorUrl ];
+            const queryParts = [ req.ecid, req.pid, req.parentWindowOriginParam, req.returnQueryParam, req.loadWarning, req.goToErrorUrl, req.interfaceQueryParam, ];
             if ( req.webformType === 'view-instance' ) {
                 queryParts.unshift( `instance_id=${req.body.instance_id}` );
             }
@@ -467,7 +483,7 @@ function _generateWebformUrls( id, req ) {
         }
         case 'note-instance': {
             const viewId = dnClosePart ? idViewDnc : idViewDn;
-            const queryString = _generateQueryString( [ req.ecid, req.pid, `instance_id=${req.body.instance_id}`, req.parentWindowOriginParam, req.returnQueryParam, req.loadWarning, req.goToErrorUrl ] );
+            const queryString = _generateQueryString( [ req.ecid, req.pid, `instance_id=${req.body.instance_id}`, req.parentWindowOriginParam, req.returnQueryParam, req.loadWarning, req.goToErrorUrl, req.interfaceQueryParam ] );
             url = `${BASEURL}edit/${FSPATH}dn/${dnClosePart}${IFRAMEPATH}${viewId}${queryString}${hash}`;
             break;
         }
@@ -476,7 +492,7 @@ function _generateWebformUrls( id, req ) {
             // - has optional instance support
             // - has protection against accidental fieldsubmissions (extra layer of security)
             // - for now OC is planning to not add DN questions to the XForm if it doesn't want those printed
-            const queryParts = [ req.ecid, req.pid, 'print=true' ];
+            const queryParts = [ req.ecid, req.pid, 'print=true', req.interfaceQueryParam ];
             if ( req.body.instance_id ) {
                 queryParts.push( `instance_id=${req.body.instance_id}` );
             }

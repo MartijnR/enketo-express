@@ -101,11 +101,12 @@ describe( 'api', () => {
         const dataSendMethod = ( test.method === 'get' ) ? 'query' : 'send';
         const ecid = typeof test.ecid === 'undefined' ? 'a1b1' : test.ecid;
         const pid = typeof test.pid === 'undefined' ? 'qwe' : test.pid;
+        const interfce = typeof test.interface === 'undefined' ? false : test.interface;
 
         it( `${test.method.toUpperCase()} /oc/api/v${version}${endpoint} with ${authDesc} authentication ` +
             `and ${server}, ${id}, ${ret}, ${instance}, ${instanceId}, ${test.theme}, ` +
             `parentWindowOrigin: ${test.parentWindowOrigin}, defaults: ${JSON.stringify( test.defaults )}, ` +
-            `åpid:${pid}, ecid:${ecid}, jini:${test.jini} responds with ${test.status}`,
+            `interface:${interfce}, pid:${pid}, ecid:${ecid}, jini:${test.jini} responds with ${test.status}`,
             done => {
                 request( app )[ test.method ]( `/oc/api/v${version}${endpoint}` )
                     .set( auth )[ dataSendMethod ]( {
@@ -124,7 +125,8 @@ describe( 'api', () => {
                         landscape: test.landscape,
                         defaults: test.defaults,
                         load_warning: test.warning,
-                        parent_window_origin: test.parentWindowOrigin
+                        parent_window_origin: test.parentWindowOrigin,
+                        interface: interfce
                     } )
                     .expect( test.status )
                     .expect( resp => {
@@ -820,6 +822,55 @@ describe( 'api', () => {
                 };
                 obj.pid = ''; // is optional
                 testResponse( obj );
+            } );
+
+            describe( 'interface parameter', () => {
+
+                const endpoints = [
+                    '/instance/edit',
+                    '/instance/edit/c',
+                    '/instance/edit/rfc',
+                    '/instance/edit/rfc/c',
+                    '/instance/view',
+                    '/instance/note',
+                    '/instance/note/c',
+                ];
+                const validValues = [ 'default', 'sdv', 'queries' ];
+                const invalidValues = [ 'a', 'invalid' ];
+
+                endpoints.forEach( endpoint => {
+                    validValues.forEach( interfaceValue => {
+                        const obj = {
+                            version,
+                            auth: true,
+                            method: 'post',
+                            endpoint,
+                            interface: interfaceValue,
+                            instanceId: true,
+                            instance: true,
+                            ecid: 'a',
+                            status: 201,
+                            expected: new RegExp( `interface=${interfaceValue}` )
+                        };
+                        testResponse( obj );
+                    } );
+
+                    invalidValues.forEach( interfaceValue => {
+                        const obj = {
+                            version,
+                            auth: true,
+                            method: 'post',
+                            endpoint,
+                            interface: interfaceValue,
+                            instanceId: true,
+                            instance: true,
+                            ecid: 'a',
+                            status: 400
+                        };
+                        testResponse( obj );
+                    } );
+
+                } );
             } );
 
             // previews, ignoring ecid and pid
