@@ -79,13 +79,15 @@ function init( selector, data, loadWarnings = [] ) {
                 else {
                     err = `${t( 'alert.goto.hidden' )} `;
                     const goToErrorLink = settings.goToErrorUrl ? `<a href="${settings.goToErrorUrl}">${settings.goToErrorUrl}</a>` : '';
-                    err += goToErrorLink ? t( 'alert.goto.msg2', {
-                        miniform: goToErrorLink,
-                        // switch off escaping
-                        interpolation: {
-                            escapeValue: false
-                        }
-                    } ) : t( 'alert.goto.msg1' );
+                    if ( settings.interface === 'queries' ) {
+                        err += goToErrorLink ? t( 'alert.goto.msg2', {
+                            miniform: goToErrorLink,
+                            // switch off escaping
+                            interpolation: {
+                                escapeValue: false
+                            }
+                        } ) : t( 'alert.goto.msg1' );
+                    }
                 }
                 // For goto targets that are discrepancy notes and are relevant but their linked question is not,
                 // the gotohidden event will be fired twice. We can safely remove the eventlistener after the first
@@ -99,7 +101,6 @@ function init( selector, data, loadWarnings = [] ) {
             form.view.html.addEventListener( events.GoToHidden().type, handleGoToHidden );
 
             loadErrors = loadErrors.concat( form.init() );
-
 
             // Make sure audits are logged in DN widget for calculated values during form initialization 
             // before the DN widget was initialized.
@@ -134,20 +135,23 @@ function init( selector, data, loadWarnings = [] ) {
             // In order to aggregate regular loadErrors and GoTo loaderrors,
             // this is placed in between form.init() and form.goTo().
             $( '.main-loader' ).remove();
-
             if ( settings.goTo && location.hash ) {
                 // form.goTo returns an array of 1 error if it has error. We're using our special
                 // knowledge of Enketo Core to replace this error
                 let goToErrors = form.goTo( decodeURIComponent( location.hash.substring( 1 ) ).split( '#' )[ 0 ] );
+                const replacementError = `${t( 'alert.goto.notfound' )} `;
                 if ( goToErrors.length ) {
-                    const replErr = `${t( 'alert.goto.notfound' )} `;
-                    goToErrors = goToErrorLink ? [ replErr + t( 'alert.goto.msg2', {
-                        miniform: goToErrorLink,
-                        // switch off escaping
-                        interpolation: {
-                            escapeValue: false
-                        }
-                    } ) ] : [ replErr + t( 'alert.goto.msg1' ) ];
+                    if ( settings.interface === 'queries' ) {
+                        goToErrors = goToErrorLink ? [ replacementError + t( 'alert.goto.msg2', {
+                            miniform: goToErrorLink,
+                            // switch off escaping
+                            interpolation: {
+                                escapeValue: false
+                            }
+                        } ) ] : [ replacementError + t( 'alert.goto.msg1' ) ];
+                    } else {
+                        goToErrors = [ replacementError ];
+                    }
                 }
                 loadWarnings = loadWarnings.concat( goToErrors );
             }

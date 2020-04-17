@@ -11,7 +11,7 @@ const settingsMap = [
     { q: 'form', s: 'xformUrl' }, { q: 'id', s: 'xformId' },
     'instanceId', { q: 'instance_id', s: 'instanceId' },
     'parentWindowOrigin', 'print', 'format', 'landscape', 'margin', 'touch',
-    { q: 'PID', s: 'pid' }, 'completeButton', 'loadWarning', 'goToErrorUrl',
+    { q: 'PID', s: 'pid' }, 'completeButton', 'loadWarning', 'goToErrorUrl', 'interface'
 ];
 
 window.addEventListener( 'message', event => {
