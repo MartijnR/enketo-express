@@ -2,13 +2,9 @@
 
 import { FormModel as Model } from 'enketo-core';
 import { getXPath } from 'enketo-core/src/js/dom-utils';
-import XPathJS from 'enketo-xpathjs';
 import $ from 'jquery';
 
-// Add OC custom XPath functions
-import extendXPath from 'enketo-xpath-extensions-oc';
 import sniffer from './sniffer';
-extendXPath( XPathJS );
 
 Model.prototype.getUpdateEventData = function( el, type ) {
     let fullPath;

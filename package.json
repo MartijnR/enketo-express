@@ -49,9 +49,9 @@
         "csurf": "1.11.x",
         "db.js": "0.15.0",
         "debug": "4.1.x",
-        "enketo-core": "5.16.10",
+        "enketo-core": "enketo/enketo-core#07e7d127",
         "enketo-transformer": "1.41.2",
-        "enketo-xpath-extensions-oc": "github:OpenClinica/enketo-xpath-extensions-oc#efa9830",
+        "enketo-xpath-extensions-oc": "OpenClinica/enketo-xpath-extensions-oc#9b40dd2",
         "evp_bytestokey": "^1.0.3",
         "express": "^4.17.1",
         "grunt": "^1.3.0",
@@ -132,7 +132,8 @@
         "enketo/widgets": "./public/js/build/widgets",
         "enketo/translator": "./public/js/src/module/translator",
         "enketo/dialog": "./public/js/src/module/gui",
-        "enketo/file-manager": "./public/js/src/module/file-manager"
+        "enketo/file-manager": "./public/js/src/module/file-manager",
+        "enketo/xpath-evaluator-binding": "./public/js/src/module/xpath-evaluator-binding"
     },
     "entries": [
         "public/js/src/enketo-webform.js",
