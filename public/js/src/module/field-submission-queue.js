@@ -82,6 +82,8 @@ class FieldSubmissionQueue {
 
         if ( fieldPath && xmlFragment && instanceId ) {
 
+            console.log( 'adding fs for', fieldPath );
+
             fd.append( 'instance_id', instanceId );
             fd.append( 'xml_submission_fragment_file', new Blob( [ xmlFragment ], {
                 type: 'text/xml'

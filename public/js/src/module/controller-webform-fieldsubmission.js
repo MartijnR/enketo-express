@@ -124,6 +124,7 @@ function init( formEl, data, loadErrors = [] ) {
         // Create fieldsubmissions for static default values
         staticDefaultNodes.forEach( node => {
             const props = m.getUpdateEventData( node );
+            console.log( 'adding static fs for', node );
             fieldSubmissionQueue.addFieldSubmission( props.fullPath, props.xmlFragment, form.instanceID );
         } );
 
@@ -620,6 +621,16 @@ function _doNotSubmit( fullPath ) {
 }
 
 function _setFormEventHandlers() {
+
+    // Trigger fieldsubmissions for static defaults in added repeat instance
+    // It is important that this listener comes before the addRepeat listener in enketo-core that will also run calculations,
+    // and other stuff
+    form.view.html.addEventListener( events.AddRepeat().type, event => {
+        const selector =  `${event.detail.repeatPath}[${event.detail.repeatIndex}]//*`;
+        console.log( 'add repeat selector for static default nodes', selector );
+        const staticDefaultNodes = [ ...form.model.node( selector, null, { noEmpty: true } ).getElements() ];
+        console.log( 'static default nodes in new repeat', staticDefaultNodes, staticDefaultNodes.map( el => el.textContent ) );
+    } );
 
     form.view.html.addEventListener( events.ProgressUpdate().type, event => {
         if ( event.target.classList.contains( 'or' ) && formprogress && event.detail ) {
