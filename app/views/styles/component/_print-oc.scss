@@ -114,3 +114,16 @@
 .btn-dn {
     display: none;
 }
+
+.or {
+    
+    &:not(.print-relevant-only) section.question.or-branch.disabled, 
+    &:not(.print-relevant-only) section.or-branch.disabled {
+        display: table;
+    }
+    
+    fieldset.question {
+        display: table-cell;
+    }
+
+}
